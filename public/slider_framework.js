@@ -109,11 +109,11 @@
     =============================== */
     async function init(page) {
         try {
-            const templates = await fetchTemplates();
-            const sliders = await fetchSliders();
-            const config = await fetchConfig(page);
+            const htmlTemplates = await fetchTemplates();
+            const sliderData = await fetchSliders();
+            const pageConfig = await fetchConfig(page);
 
-            injectProductionHtml(templates, sliders, config);
+            injectProductionHtml(htmlTemplates, sliderData, pageConfig);
         } catch (error) {
             console.error(`(Slider Framework) Failed to fetch config file(s):`, error);
         };
@@ -138,35 +138,36 @@
         });
     }
 
-    function injectProductionHtml(templates, sliders, config) {
+    function injectProductionHtml(htmlTemplates, sliderData, pageConfig) {
         const sliderContainer = document.getElementById('sliders');
 
         if (!sliderContainer) {
-            throw new Error(`(Slider Framework) Missing #slider element in the DOM.`);
+            throw new Error(`(Slider Framework) Missing #sliders element in the DOM.`);
         };
 
-        const rowTemplate = templates.rows[config.sliders.rowLayout];
-        const sliderTemplate = templates.sliders[config.sliders.sliderLayout];
-        const slideTemplate = templates.slides[config.sliders.slideLayout];
+        const productionHtml = pageConfig.sliders.map((sliderConfig) => {
+            const sliderId = sliderConfig.id;
+            const slides = sliderData[sliderId];
 
-        if (!rowTemplate || !sliderTemplate || !slideTemplate) {
-            throw new Error(`(Slider Framework) Missing template(s):
-                rowLayout: ${config.sliders.rowLayout}
-                sliderLayout: ${config.sliders.sliderLayout}
-                slideLayout: ${config.sliders.slideLayout}
-            `);
-        };
-
-        const allRowsHtml = config.sliders.map((sliderId) => {
-            const items = sliders[sliderId];
-
-            if (!Array.isArray(items)) {
+            if (!Array.isArray(slides)) {
                 throw new Error(`(Slider Framework) No slider data found for: ${sliderId}`);
-            }
+            };
+
+            const rowTemplate = htmlTemplates.rows[sliderConfig.rowLayout];
+            const sliderTemplate = htmlTemplates.sliders[sliderConfig.sliderLayout];
+            const slideTemplate = htmlTemplates.slides[sliderConfig.slideLayout];
+
+            if (!rowTemplate || !sliderTemplate || !slideTemplate) {
+                throw new Error(`(Slider Framework) Missing HTML template(s) for slider "${sliderId}":
+                        rowLayout: ${sliderConfig.rowLayout}
+                        sliderLayout: ${sliderConfig.sliderLayout}
+                        slideLayout: ${sliderConfig.slideLayout}
+                    `);
+            };
 
             const sliderHtml = buildSliderHtml(
                 sliderId,
-                items,
+                slides,
                 sliderTemplate,
                 slideTemplate
             );
@@ -174,9 +175,7 @@
             return buildRowHtml(sliderHtml, rowTemplate);
         }).join('');
 
-        console.log('(Debug) allRowsHtml:', allRowsHtml);
-
-        sliderContainer.innerHTML = allRowsHtml;
+        sliderContainer.innerHTML = productionHtml;
     };
 
     /* ===============================
