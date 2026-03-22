@@ -84,7 +84,7 @@
         const response = await fetch(templatePath);
 
         if (!response.ok) {
-            throw new Error(`(Slider Framework) Failed to fetch template (${response.status}): ${response.url}`);
+            throw new Error(`(Slider Framework) Failed to fetch HTML template file (${response.status}): ${response.url}`);
         };
 
         return response.json();
@@ -98,7 +98,7 @@
         const response = await fetch(configPath);
 
         if (!response.ok) {
-            throw new Error(`(Slider Framework) Failed to fetch config (${response.status}): ${response.url}`);
+            throw new Error(`(Slider Framework) Failed to fetch page config file (${response.status}): ${response.url}`);
         };
 
         return response.json();
