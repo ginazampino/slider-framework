@@ -28,7 +28,6 @@
     /* ===============================
         Build Slider (Placeholder)
     =============================== */
-
     function createPlaceholderSlide() {
         return `
             <div class="swiper-placeholder-slide">
