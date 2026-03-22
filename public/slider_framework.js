@@ -114,6 +114,8 @@
             const pageConfig = await fetchConfig(page);
 
             injectProductionHtml(htmlTemplates, sliderData, pageConfig);
+            await loadSwiperFiles();
+            initSwiper();
         } catch (error) {
             console.error(`(Slider Framework) Failed to fetch config file(s):`, error);
         };
@@ -176,6 +178,85 @@
         }).join('');
 
         sliderContainer.innerHTML = productionHtml;
+    };
+
+    /* ===============================
+        Add Swiper to Page
+    =============================== */
+    function injectSwiperStyles(url) {
+        return new Promise((resolve, reject) => {
+            if (document.querySelector(`link[href="${url}"]`)) {
+                resolve();
+                return;
+            };
+            
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = url;
+
+            link.onload = () => resolve();
+            link.onerror = () => reject(new Error(`(Slider Framework) Failed to load Swiper stylesheet: ${url}`));
+
+            document.head.prepend(link);
+        });
+    };
+
+    function injectSwiperScript(url) {
+        return new Promise((resolve, reject) => {
+            if (document.querySelector(`script[src="${url}]`)) {
+                resolve();
+                return;
+            };
+
+            const script = document.createElement('script');
+            script.src = url;
+            script.defer = true;
+
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error(`(Slider Framework) Failed to load Swiper script: ${url}`));
+
+            document.head.prepend(script);
+        });
+    };
+
+    async function loadSwiperFiles() {
+        const cssUrl = 'https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css';
+        const jsUrl = 'https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js';
+
+        await injectSwiperStyles(cssUrl);
+        await injectSwiperScript(jsUrl);
+    };
+
+    /* ===============================
+        Initiate Swiper
+    =============================== */
+    function initSwiper() {
+        if (typeof Swiper === 'undefined') {
+            console.warn(`(Slider Framework) Swiper is not available on window.`)
+            return;
+        };
+
+        const swiperElements = document.querySelectorAll('.swiper');
+
+        if (!swiperElements.length) {
+            console.warn(`(Slider Framework) No .swiper elements found in the DOM.`);
+            return;
+        };
+
+        swiperElements.forEach((swiperElement) => {
+            const swiperContainer = swiperElement.closest('.swiper-container');
+            const prevButton = swiperContainer?.querySelector('.swiper-button-prev');
+            const nextButton = swiperContainer?.querySelector('.swiper-button-next');
+
+            new Swiper(swiperElement, {
+                slidesPerView: 4,
+                spaceBetween: 16,
+                navigation: {
+                    prevEl: prevButton,
+                    nextEl: nextButton
+                }
+            });
+        });
     };
 
     /* ===============================
