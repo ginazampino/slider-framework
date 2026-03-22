@@ -1,0 +1,110 @@
+.swiper-container {
+    overflow: hidden;
+    max-width: 100%;
+    width: 100%;
+}
+
+.swiper {
+    border: 2px solid transparent;
+    border-radius: .75rem;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+
+.swiper-slide {
+    border-radius: .75rem;
+    overflow: hidden;
+}
+
+.swiper-wrapper {
+    position: relative;
+}
+
+.swiper-placeholder-wrapper {
+    display: flex;
+    overflow: hidden;
+}
+
+.swiper-placeholder-wrapper div + div {
+    margin-left: 20px;
+}
+
+.swiper-placeholder-slide {
+    align-items: center;
+    background: #eee;
+    border-radius: .75rem;
+    color: gray;
+    display: flex;
+    flex: 0 0 360px;
+    height: 240px;
+    justify-content: center;
+}
+
+.swiper-button-prev,
+.swiper-button-next,
+.swiper-button-toggle {
+    border: 2px solid transparent;
+    border-radius: .75rem;
+    color: gray;
+    cursor: pointer;
+    margin: 0;
+    opacity: .5;
+    transition: .2s ease-in-out;
+    z-index: 99;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+    font-size: 2.5em;
+}
+
+.swiper-button-toggle {
+    align-items: center;
+    display: flex;
+    font-size: 2em;
+    height: 40.8px;
+    justify-content: center;
+    left: 4px;
+    position: absolute;
+    top: 0;
+    width: 40.8px;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover,
+.swiper-button-toggle:hover,
+.swiper-button-prev:focus,
+.swiper-button-next:focus,
+.swiper-button-toggle:focus {
+    opacity: 1;
+}
+
+.swiper:focus,
+.swiper-button-prev:focus,
+.swiper-button-next:focus,
+.swiper-button-toggle:focus {
+    border-color: #000;
+}
+
+.slider-description {
+    margin-bottom: 20px;
+}
+
+.swiper-slide {
+    background-image: url('https://placehold.co/360x240');
+    background-size: cover;
+    background-position: center;
+    color: gray;
+    height: 240px;
+    width: 360px;
+}
+
+.swiper-slide p {
+    text-align: center;
+}
+
+
+.swiper-slide img {
+    height: 100%;
+}

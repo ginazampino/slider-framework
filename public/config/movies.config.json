@@ -1,0 +1,18 @@
+{
+    "sliders": [
+        {
+            "id": "actionMovies",
+            "rowLayout": "default",
+            "sliderType": "slider",
+            "sliderLayout": "default",
+            "slideLayout": "movie"
+        },
+        {
+            "id": "horrorMovies",
+            "rowLayout": "default",
+            "sliderType": "slider",
+            "sliderLayout": "default",
+            "slideLayout": "movie"
+        }
+    ]
+}

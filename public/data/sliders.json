@@ -1,0 +1,88 @@
+{
+    "actionMovies": [
+        {
+            "title": "Conan the Barbarian",
+            "image": "",
+            "url": "https://www.imdb.com/title/tt0082198/"
+        },
+        {
+            "title": "Conan the Destroyer",
+            "image": "",
+            "url": "https://www.imdb.com/title/tt0087078/"
+        },
+        {
+            "title": "Death Race 2000",
+            "image": "",
+            "url": "https://www.imdb.com/title/tt0072856/"
+        },
+        {
+            "title": "Kull the Conquerer",
+            "image": "",
+            "url": "https://www.imdb.com/title/tt0119484/"
+        },
+        {
+            "title": "Mad Max",
+            "image": "",
+            "url": "https://www.imdb.com/title/tt0079501/"
+        },
+        {
+            "title": "Red Sonja",
+            "image": "",
+            "url": "https://www.imdb.com/title/tt0089893"
+        }
+    ],
+    "horrorMovies": [
+        {
+            "title": "Tremors",
+            "image": "",
+            "url": "#"
+        },
+        {
+            "title": "Frogs",
+            "image": "",
+            "url": "#"
+        },
+        {
+            "title": "The Blob",
+            "image": "",
+            "url": "#"
+        }, 
+        {
+            "title": "Attack of the Killer Tomatoes!",
+            "image": "",
+            "url": "#"
+        },
+        {
+            "title": "The Evil Dead",
+            "image": "",
+            "url": "#"
+        }
+    ],
+    "scifiMovies": [
+        {
+            "title": "Planet of the Apes",
+            "image": "",
+            "url": "#"
+        },
+        {
+            "title": "Soylent Green",
+            "image": "",
+            "url": "#"
+        },
+        {
+            "title": "Westworld",
+            "image": "",
+            "url": "#"
+        },
+        {
+            "title": "A Boy and His Dog",
+            "image": "",
+            "url": "#"
+        },
+        {
+            "title": "Plan 9 from Outer Space",
+            "image": "",
+            "url": "#"
+        }
+    ]
+}
