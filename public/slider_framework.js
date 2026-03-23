@@ -1,46 +1,69 @@
 (() => {
-    /* ===============================
-        Path (URL) Handler
-    =============================== */
+    /* ==================================
+        Filter Allowed Pages
+    ================================== */
+    const ALLOWED_PAGES = new Set(['movies', 'shows']); // NOTE: Faster than Array
     const pageName = getPageName(window.location.pathname);
-    const pageList = ['movies', 'shows'];
 
-    if (!pageList.includes(pageName)) {
-        console.log(`(Debug) Skipping page: ${pageName}`);
+    if (!ALLOWED_PAGES.has(pageName)) {
+        console.log(`⚠️ (Debug - Slider Framework) Page "${pageName}" is not allowed. Skipping page.`);
         return;
     };
-
-    // buildPlaceholderHtml(pageName);
-    // init(pageName);
-
+    
     function getPageName(path) {
-        let pageName = path.replace(/^\/+/, '');
+        const extractedName = path
+            .replace(/^\/+/, '')
+            .replace(/\.(html|aspx)$/, '');
+        return extractedName || '';
+    };
 
-        if (pageName === '') {
-            return 'home';
+    /* ==================================
+        Build Placeholders
+    ================================== */
+    const sliderContainerId = 'sliders';
+    const placeholderAmounts = { movies: 3, shows: 2 }; 
+    const placeholderSlideAmount = 5;
+
+    buildPlaceholderHtml(pageName);
+    init(pageName);
+
+    function buildPlaceholderHtml(page) {
+        const sliderContainer = document.getElementById(sliderContainerId);
+
+        if (!sliderContainer) {
+            console.warn(`(Slider Framework) Expected container "#${sliderContainerId}" not found on page "${page}". Skipping placeholder injection.`);
+            return;
         };
 
-        pageName = pageName.replace(/\.html$/, '');
+        const placeholderSliderAmount = placeholderAmounts[page] || 1;
+        const placeholderSliders = [];
 
-        return pageName;
+        for (let i = 0; i < placeholderSliderAmount; i++) {
+            const slidesHtml = generatePlaceholderSlides(placeholderSlideAmount);
+            const sliderHtml = generatePlaceholderSlider(slidesHtml);
+
+            placeholderSliders.push(sliderHtml);
+        };
+
+        const placeholderHtml = placeholderSliders.join('');
+        sliderContainer.innerHTML = placeholderHtml;
     };
 
-    /* ===============================
-        Build Slider (Placeholder)
-    =============================== */
-    function createPlaceholderSlide() {
-        return `
-            <div class="swiper-placeholder-slide">
-                <p>Loading...</p>
-            </div>
-        `;
+    function generatePlaceholderSlides(amount) {
+        const slides = [];
+
+        for (let i = 0; i < amount; i++) {
+            slides.push(`
+                <div class="swiper-placeholder-slide">
+                    <p>Loading...</p>
+                </div>
+            `);
+        };
+
+        return slides.join('');
     };
 
-    function generateSlides(count) {
-        return Array.from({ length: count }, createPlaceholderSlide).join('');
-    };
-
-    function createPlaceholderSlider(slidesHtml) {
+    function generatePlaceholderSlider(slidesHtml) {
         return `
             <div class="band">
                 <h2>Slider Mode: Placeholder</h2>
@@ -53,126 +76,122 @@
         `;
     };
 
-    function buildPlaceholderHtml(page) {
-        const sliderContainer = document.getElementById('sliders');
-
-        if (!sliderContainer) {
-            throw new Error(`(Slider Framework) Missing container element in the DOM: #sliders`);
-        };
-
-        const placeholderCounts = {
-            movies: 3,
-            shows: 2
-        };
-
-        const sliderCount = placeholderCounts[page] || 1;
-        const slidesPerSlider = 5;
-
-        const placeholderHtml = Array.from({ length: sliderCount }, () => {
-            const slidesHtml = generateSlides(slidesPerSlider);
-            return createPlaceholderSlider(slidesHtml);
-        }).join('');
-
-        sliderContainer.innerHTML = placeholderHtml;
-    };
-
-    /* ===============================
-        Fetch HTML Templates (JSON)
-    =============================== */
-    async function fetchTemplates() {
-        const templatePath = '/config/templates.json';
-        const response = await fetch(templatePath);
+    /* ==================================
+        Fetch JSON Files
+    ================================== */
+    async function fetchHtmlTemplates() {
+        const path = '/config/templates.json';
+        const response = await fetch(path);
 
         if (!response.ok) {
-            throw new Error(`(Slider Framework) Failed to fetch HTML template file (${response.status}): ${response.url}`);
+            console.log(`(Slider Framework) Failed to fetch HTML templates (${response.status}): ${response.url}`);
+            return;
         };
 
         return response.json();
     };
 
-    /* ===============================
-        Fetch Page Config (JSON)
-    =============================== */
-    async function fetchConfig(page) {
-        const configPath = `/config/${page}.config.json`;
-        const response = await fetch(configPath);
+    async function fetchSliderData() {
+        const path = '/data/sliders.json';
+        const response = await fetch(path);
 
         if (!response.ok) {
-            throw new Error(`(Slider Framework) Failed to fetch page config file (${response.status}): ${response.url}`);
+            console.log(`(Slider Framework) Failed to fetch slider data (${response.status}): ${response.url}`);
+            return;
+        };
+        
+        return response.json();
+    };
+
+    async function fetchPageConfig(page) {
+        const path = `/config/${page}.config.json`;
+        const response = await fetch(path);
+
+        if (!response.ok) {
+            console.log(`(Slider Framework) Failed to fetch page config (${response.status}): ${response.url}`);
+            return;
         };
 
         return response.json();
     };
 
-    /* ===============================
-        Build Slider (Production)
-    =============================== */
+    /* ==================================
+        Initiate Production Page
+    ================================== */
     async function init(page) {
         try {
-            const htmlTemplates = await fetchTemplates();
-            const sliderData = await fetchSliders();
-            const pageConfig = await fetchConfig(page);
+            const htmlTemplates = await fetchHtmlTemplates();
+            const sliderData = await fetchSliderData();
+            const pageConfig = await fetchPageConfig(page);
 
-            injectProductionHtml(htmlTemplates, sliderData, pageConfig);
-            await loadSwiperFiles();
+            buildProductionHtml(htmlTemplates, sliderData, pageConfig);
+            await addSwiperAssets();
             initSwiper();
         } catch (error) {
-            console.error(`(Slider Framework) Failed to fetch config file(s):`, error);
+            console.error(`(Slider Framework) Failed to fetch required config file(s) from server:`, error);
         };
     };
 
-    function buildSlidesHtml(items, slideTemplate) {
-        return items.map(item => fillTemplate(slideTemplate, item)).join('');
-    }
-
-    function buildSliderHtml(sliderId, items, sliderTemplate, slideTemplate) {
-        const slidesHtml = buildSlidesHtml(items, slideTemplate);
-
-        return fillTemplate(sliderTemplate, {
-            id: sliderId,
-            slides: slidesHtml
-        });
-    }
-
-    function buildRowHtml(sliderHtml, rowTemplate) {
-        return fillTemplate(rowTemplate, {
-            slider: sliderHtml
-        });
-    }
-
-    function injectProductionHtml(htmlTemplates, sliderData, pageConfig) {
-        const sliderContainer = document.getElementById('sliders');
-
-        if (!sliderContainer) {
-            throw new Error(`(Slider Framework) Missing #sliders element in the DOM.`);
+    /* ==================================
+        Build Production Sliders
+    ================================== */
+    function buildSlidesHtml(slides, slideTemplate) {
+        const slideHtmlList = [];
+        
+        for (const slide of slides) {
+            const slideHtml = fillTemplate(slideTemplate, slide);
+            slideHtmlList.push(slideHtml);
         };
 
-        const productionHtml = pageConfig.sliders.map((sliderConfig) => {
-            const sliderId = sliderConfig.id;
+        return slideHtmlList.join('');
+    };
+
+    function buildSliderHtml(sliderId, slides, sliderTemplate, slideTemplate) {
+        const slidesHtml = buildSlidesHtml(slides, slideTemplate);
+
+        const templateData = {
+            id: sliderId,
+            slides: slidesHtml
+        };
+
+        return fillTemplate(sliderTemplate, templateData);
+    };
+
+    function buildRowHtml(sliderHtml, rowTemplate) {
+        const templateData = {
+            slider: sliderHtml
+        };
+
+        return fillTemplate(rowTemplate, templateData);
+    };
+
+    function buildProductionHtml(htmlTemplates, sliderData, pageConfig) {
+        const sliderContainer = document.getElementById(sliderContainerId);
+        
+        if (!sliderContainer) {
+            console.warn(`(Slider Framework) Expected container "#${sliderContainerId}" not found. Skipping placeholder injection.`);
+            return;
+        };
+
+        const productionHtml = pageConfig.sliders.map((slider) => {
+            const sliderId = slider.id;
             const slides = sliderData[sliderId];
 
             if (!Array.isArray(slides)) {
-                throw new Error(`(Slider Framework) No slider data found for: ${sliderId}`);
+                console.warn(`(Slider Framework) No slider data found for: #${sliderId}`);
+                return;
             };
 
-            const rowTemplate = htmlTemplates.rows[sliderConfig.rowLayout];
-            const sliderTemplate = htmlTemplates.sliders[sliderConfig.sliderLayout];
-            const slideTemplate = htmlTemplates.slides[sliderConfig.slideLayout];
+            const rowTemplate = htmlTemplates.rows[slider.rowLayout];
+            const sliderTemplate = htmlTemplates.sliders[slider.sliderLayout];
+            const slideTemplate = htmlTemplates.slides[slider.slideLayout];
 
             if (!rowTemplate || !sliderTemplate || !slideTemplate) {
-                throw new Error(`(Slider Framework) Missing HTML template(s) for slider "${sliderId}":
-                        rowLayout: ${sliderConfig.rowLayout}
-                        sliderLayout: ${sliderConfig.sliderLayout}
-                        slideLayout: ${sliderConfig.slideLayout}
-                    `);
+                console.warn(`(Slider Framework) Missing HTML template(s) for slider: #${sliderId}`);
+                return;
             };
 
-            const sliderHtml = buildSliderHtml(
-                sliderId,
-                slides,
-                sliderTemplate,
-                slideTemplate
-            );
+            const sliderHtml = buildSliderHtml(sliderId, slides, sliderTemplate, slideTemplate);
 
             return buildRowHtml(sliderHtml, rowTemplate);
         }).join('');
@@ -180,28 +199,28 @@
         sliderContainer.innerHTML = productionHtml;
     };
 
-    /* ===============================
-        Add Swiper to Page
-    =============================== */
-    function injectSwiperStyles(url) {
+    /* ==================================
+        Add Swiper Files
+    ================================== */
+    function addSwiperStyles(url) {
         return new Promise((resolve, reject) => {
             if (document.querySelector(`link[href="${url}"]`)) {
                 resolve();
                 return;
             };
-            
+
             const link = document.createElement('link');
             link.rel = 'stylesheet';
             link.href = url;
-
+            
             link.onload = () => resolve();
-            link.onerror = () => reject(new Error(`(Slider Framework) Failed to load Swiper stylesheet: ${url}`));
-
+            link.onerror = () => reject(new Error(`(Slider Framework) Failed to load Swiper stylesheet at: ${url}`));
+        
             document.head.prepend(link);
         });
     };
 
-    function injectSwiperScript(url) {
+    function addSwiperScript(url) {
         return new Promise((resolve, reject) => {
             if (document.querySelector(`script[src="${url}]`)) {
                 resolve();
@@ -213,42 +232,42 @@
             script.defer = true;
 
             script.onload = () => resolve();
-            script.onerror = () => reject(new Error(`(Slider Framework) Failed to load Swiper script: ${url}`));
+            script.onerror = () => reject(new Error(`(Slider Framework) Failed to load Swiper script at: ${url}`));
 
             document.head.prepend(script);
         });
     };
 
-    async function loadSwiperFiles() {
+    async function addSwiperAssets() {
         const cssUrl = 'https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css';
         const jsUrl = 'https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js';
 
-        await injectSwiperStyles(cssUrl);
-        await injectSwiperScript(jsUrl);
+        await addSwiperStyles(cssUrl);
+        await addSwiperScript(jsUrl);
     };
 
-    /* ===============================
+    /* ==================================
         Initiate Swiper
-    =============================== */
+    ================================== */
     function initSwiper() {
         if (typeof Swiper === 'undefined') {
-            console.warn(`(Slider Framework) Swiper is not available on window.`)
+            console.warn(`(Slider Framework) Swiper is not available on the window.`);
             return;
         };
 
         const swiperElements = document.querySelectorAll('.swiper');
 
         if (!swiperElements.length) {
-            console.warn(`(Slider Framework) No .swiper elements found in the DOM.`);
+            console.warn(`(Slider Framework) No ".swiper" elements found in the DOM.`);
             return;
         };
 
-        swiperElements.forEach((swiperElement) => {
-            const swiperContainer = swiperElement.closest('.swiper-container');
+        swiperElements.forEach((swiper) => {
+            const swiperContainer = swiper.closest('.swiper-container');
             const prevButton = swiperContainer?.querySelector('.swiper-button-prev');
             const nextButton = swiperContainer?.querySelector('.swiper-button-next');
 
-            new Swiper(swiperElement, {
+            new Swiper(swiper, {
                 slidesPerView: 4,
                 spaceBetween: 16,
                 navigation: {
@@ -259,39 +278,24 @@
         });
     };
 
-    /* ===============================
-        Fetch Slider Data (JSON)
-    =============================== */
-    async function fetchSliders() {
-        const dataPath = '/data/sliders.json';
-        const response = await fetch(dataPath);
+    /* ==================================
+        Helper Function(s)
+    ================================== */
+    const TEMPLATE_REGEX = /\{\{(.*?)\}\}/g;
 
-        if (!response.ok) {
-            throw new Error(`(Slider Framework) Failed to fetch slider data (${response.status}): ${response.url}`);
-        };
-
-        return response.json();
-    };
-
-    /* ===============================
-        Replace Template Placeholders
-    =============================== */
     function fillTemplate(template, data) {
-        return template.replace(/\{\{(.*?)\}\}/g, (match, key) => { // MATCH: "{{title}}"", KEY: "title"
-            const trimmedKey = key.trim(); // EXAMPLE: "{{ title }} → " title " → "title"
-            const value = data[trimmedKey]; // EXAMPLE: data["title"] → "Mad Max"
+        return template.replace(TEMPLATE_REGEX, fillPlaceholder);
+
+        function fillPlaceholder(match, key) {
+            const label = key.trim();
+            const value = data[label];
 
             if (value == null) {
-                console.warn(`(Slider Framework) Missing key "${trimmedKey}" in template`, data);
-                return ''; // NOTE: Slider will be visually broken, but the website won't crash.
+                console.log(`(Slider Framework) Missing key "${label}" in template:`, data);
+                return '';
             };
 
-            return String(value); // EXAMPLE: {{title}} → "Mad Max"
-        });
+            return String(value);
+        };
     };
-
-    /* ===============================
-        Inject Swiper
-    =============================== */
-
 })();
