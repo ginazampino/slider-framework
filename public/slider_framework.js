@@ -10,8 +10,8 @@
         return;
     };
 
-    buildPlaceholderHtml(pageName);
-    init(pageName);
+    // buildPlaceholderHtml(pageName);
+    // init(pageName);
 
     function getPageName(path) {
         let pageName = path.replace(/^\/+/, '');
