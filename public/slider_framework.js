@@ -222,7 +222,7 @@
 
     function addSwiperScript(url) {
         return new Promise((resolve, reject) => {
-            if (document.querySelector(`script[src="${url}"]`)) {
+            if (document.querySelector(`script[src="${url}]`)) {
                 resolve();
                 return;
             };
@@ -258,53 +258,41 @@
         const swiperElements = document.querySelectorAll('.swiper');
 
         if (!swiperElements.length) {
-            console.warn(`(Slider Framework) No ".swiper" elements found in the DOM.`);
+            console.warn(`(SliderFramework) No ".swiper" elements found in the DOM.`);
             return;
         };
 
-        swiperElements.forEach((swiper) => {
-            const swiperContainer = swiper.closest('.swiper-container');
-            const prevButton = swiperContainer?.querySelector('.swiper-button-prev');
-            const nextButton = swiperContainer?.querySelector('.swiper-button-next');
-            const toggleButton = swiperContainer?.querySelector('.swiper-button-toggle');
+        swiperElements.forEach((element) => {
+            const swiperContainer = element.closest('.swiper-container');
+            const sliderId = swiperContainer?.id;
 
-            const DEFAULT_SWIPER_OPTIONS = {
-                a11y: true,
-                keyboard: true,
-                simulateTouch: true,
-                navigation: {
-                    prevEl: prevButton,
-                    nextEl: nextButton,
-                    addIcons: false
-                },
-                speed: 500,
-                autoplay: false,
-                rewind: true,
-                loop: false,
-                initialSlide: 0,
-                updateOnWindowResize: true,
-                slidesPerView: 'auto',
-                slidesPerGroup: 1,
-                slidesPerGroupAuto: false,
-                centeredSlides: true,
-                centeredSlidesBounds: true,
-                centerInsufficientSlides: true,
-                spaceBetween: 14
+            if (!sliderId) {
+                console.warn(`(Slider Framework) Missing slider ID on ".swiper-container":`, element);
+                return;
             };
 
-            const DEFAULT_AUTOPLAY_OPTIONS = {
-                autoplay: {
-                    delay: 500,
-                    pauseOnMouseEnter: true
-                }
-            };
-
-            const slider = new Swiper(swiper, {
-                ...DEFAULT_SWIPER_OPTIONS
+            const sliderConfig = pageConfig.sliders.find((slider)=> {
+                return slider.id === sliderId;
             });
 
-            if (toggleButton) {
-                function stopAutoplay() {
+            if (!sliderConfig) {
+                console.warn(`(Slider Framework) No page config found for slider: #${sliderId}`);
+                return;
+            };
+
+            const prevButton = swiperContainer.querySelector('.swiper-button-prev');
+            const nextButton = swiperContainer.querySelector('.swiper-button-next');
+            const toggleButton = swiperContainer.querySelector('.swiper-button-toggle');
+
+            const swiperOptions = getSwiperOptions(sliderConfig, {
+                prevButton,
+                nextButton
+            });
+
+            const slider = new Swiper(element, swiperOptions);
+
+            if (toggleButton && slider.autoplay) {
+                 function stopAutoplay() {
                     slider.autoplay.stop();
                     toggleButton.classList.remove('active');
                     toggleButton.classList.add('inactive');
@@ -321,18 +309,20 @@
                 function toggleAutoplay() {
                     if (slider.autoplay.running) {
                         stopAutoplay();
-                    } else startAutoplay();
+                    } else {
+                        startAutoplay();
+                    };
                 };
 
-                toggleButton.addEventListener('click', () => {
-                    toggleAutoplay();
-                });
+                toggleButton.addEventListener('click', toggleAutoplay);
 
                 toggleButton.addEventListener('keydown', (event) => {
+                    if (event.key !== 'Enter' && event.key !== ' ') return;
                     event.preventDefault();
                     toggleAutoplay();
                 });
             };
+
         });
     };
 
@@ -354,6 +344,37 @@
             };
 
             return String(value);
+        };
+    };
+
+    function getSwiperOptions(sliderConfig, sliderElements) {
+        const DEFAULT_SWIPER_OPTIONS = {
+            a11y: true,
+            keyboard: true,
+            simulateTouch: true,
+            speed: 500,
+            autoplay: false,
+            rewind: true,
+            loop: false,
+            initialSlide: 0,
+            updateOnWindowResize: true,
+            slidesPerView: 'auto',
+            slidesPerGroup: 1,
+            slidesPerGroupAuto: false,
+            centeredSlides: true,
+            centeredSlidesBounds: true,
+            centerInsufficientSlides: true,
+            spaceBetween: 14
+        };
+
+        return {
+            ...DEFAULT_SWIPER_OPTIONS,
+
+            navigation: sliderElements.prevButton && sliderElements.nextButton ? {
+                prevEl: sliderElements.prevButton,
+                nextEl: sliderElements.nextButton,
+                addIcons: false
+            }: false
         };
     };
 })();
