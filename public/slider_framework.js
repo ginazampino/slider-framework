@@ -126,7 +126,7 @@
 
             buildProductionHtml(htmlTemplates, sliderData, pageConfig);
             await addSwiperAssets();
-            initSwiper();
+            initSwiper(pageConfig);
         } catch (error) {
             console.error(`(Slider Framework) Failed to fetch required config file(s) from server:`, error);
         };
@@ -249,7 +249,7 @@
     /* ==================================
         Initiate Swiper
     ================================== */
-    function initSwiper() {
+    function initSwiper(pageConfig) {
         if (typeof Swiper === 'undefined') {
             console.warn(`(Slider Framework) Swiper is not available on the window.`);
             return;
@@ -266,15 +266,48 @@
             const swiperContainer = swiper.closest('.swiper-container');
             const prevButton = swiperContainer?.querySelector('.swiper-button-prev');
             const nextButton = swiperContainer?.querySelector('.swiper-button-next');
+            const toggleButton = swiperContainer?.querySelector('.swiper-button-toggle');
 
-            new Swiper(swiper, {
-                slidesPerView: 4,
-                spaceBetween: 16,
+            const DEFAULT_SWIPER_OPTIONS = {
+                a11y: true,
+                keyboard: true,
+                simulateTouch: true,
                 navigation: {
                     prevEl: prevButton,
-                    nextEl: nextButton
+                    nextEl: nextButton,
+                    addIcons: false
+                },
+                speed: 500,
+                autoplay: false,
+                rewind: true,
+                loop: false,
+                initialSlide: 0,
+                updateOnWindowResize: true,
+                slidesPerView: 'auto',
+                slidesPerGroup: 1,
+                slidesPerGroupAuto: false,
+                centeredSlides: true,
+                centeredSlidesBounds: true,
+                centerInsufficientSlides: true,
+                spaceBetween: 14
+            };
+
+            const DEFAULT_AUTOPLAY_OPTIONS = {
+                autoplay: {
+                    delay: 500,
+                    pauseOnMouseEnter: true
                 }
+            };
+
+            const slider = new Swiper(swiper, {
+                ...DEFAULT_SWIPER_OPTIONS
             });
+
+            if (toggleButton) {
+                function stopAutoplay() {
+                    
+                };
+            };
         });
     };
 

@@ -54,6 +54,22 @@
     z-index: 99;
 }
 
+.swiper-button-prev:before {
+    content: '\1F780';
+}
+
+.swiper-button-next:before {
+    content: '\1F782'
+}
+
+.swiper-button-toggle.active:before {
+    content: '\23F8';
+}
+
+.swiper-button-toggle.inactive:before {
+    content: '\2BC8';
+}
+
 .swiper-button-prev,
 .swiper-button-next {
     font-size: 2.5em;

@@ -5,7 +5,10 @@
             "rowLayout": "default",
             "sliderType": "slider",
             "sliderLayout": "default",
-            "slideLayout": "movie"
+            "slideLayout": "movie",
+            "swiperOptions": {
+                "autoplay": true
+            }
         },
         {
             "id": "horrorMovies",
