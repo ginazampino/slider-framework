@@ -278,7 +278,7 @@
                     addIcons: false
                 },
                 speed: 500,
-                autoplay: false,
+                autoplay: true,
                 rewind: true,
                 loop: false,
                 initialSlide: 0,
@@ -305,8 +305,33 @@
 
             if (toggleButton) {
                 function stopAutoplay() {
-                    
+                    slider.autoplay.stop();
+                    toggleButton.classList.remove('active');
+                    toggleButton.classList.add('inactive');
+                    toggleButton.setAttribute('aria-label', 'Start slider');
                 };
+
+                function startAutoplay() {
+                    slider.autoplay.start();
+                    toggleButton.classList.remove('inactive');
+                    toggleButton.classList.add('active');
+                    toggleButton.setAttribute('aria-label', 'Stop slider');
+                };
+
+                function toggleAutoplay() {
+                    if (slider.autoplay.running) {
+                        stopAutoplay();
+                    } else startAutoplay();
+                };
+
+                toggleButton.addEventListener('click', () => {
+                    toggleAutoplay();
+                });
+
+                toggleButton.addEventListener('keydown', (event) => {
+                    event.preventDefault();
+                    toggleAutoplay();
+                });
             };
         });
     };

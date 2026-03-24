@@ -62,7 +62,7 @@
     content: '\1F782'
 }
 
-.swiper-button-toggle.active:before {
+.swiper-button-toggle:before {
     content: '\23F8';
 }
 
