@@ -222,7 +222,7 @@
 
     function addSwiperScript(url) {
         return new Promise((resolve, reject) => {
-            if (document.querySelector(`script[src="${url}]`)) {
+            if (document.querySelector(`script[src="${url}"]`)) {
                 resolve();
                 return;
             };
@@ -278,7 +278,7 @@
                     addIcons: false
                 },
                 speed: 500,
-                autoplay: true,
+                autoplay: false,
                 rewind: true,
                 loop: false,
                 initialSlide: 0,
