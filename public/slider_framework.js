@@ -348,6 +348,8 @@
     };
 
     function getSwiperOptions(sliderConfig, sliderElements) {
+        const sliderSwiperOptions = sliderConfig.swiperOptions || {};
+
         const DEFAULT_SWIPER_OPTIONS = {
             a11y: true,
             keyboard: true,
@@ -369,12 +371,41 @@
 
         return {
             ...DEFAULT_SWIPER_OPTIONS,
+            ...sliderSwiperOptions,
 
             navigation: sliderElements.prevButton && sliderElements.nextButton ? {
                 prevEl: sliderElements.prevButton,
                 nextEl: sliderElements.nextButton,
                 addIcons: false
-            }: false
+            }: false,
+
+            autoplay: resolveAutoplay(sliderSwiperOptions.autoplay)
         };
+    };
+
+    function resolveAutoplay(autoplay) {
+        const DEFAULT_AUTOPLAY_OPTIONS = {
+            delay: 500,
+            pauseOnMouseEnter: true
+        };
+
+        if (!autoplay) {
+            return false;
+        };
+
+        if (autoplay === true) {
+            return {
+                ...DEFAULT_AUTOPLAY_OPTIONS
+            };
+        };
+
+        if (typeof autoplay === 'object') {
+            return {
+                ...DEFAULT_AUTOPLAY_OPTIONS,
+                ...autoplay
+            };
+        };
+
+        return false;
     };
 })();
