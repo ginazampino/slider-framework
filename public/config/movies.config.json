@@ -4,9 +4,9 @@
             "id": "actionMovies",
             "rowLayout": "default",
             "sliderType": "slider",
-            "sliderLayout": "autoplay",
+            "sliderLayout": "default",
             "slideLayout": "movie",
-            "sliderMode": "group",
+            "sliderMode": "page",
             "swiperOptions": {
                 "spaceBetween": 12
             }

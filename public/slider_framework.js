@@ -322,7 +322,6 @@
                     toggleAutoplay();
                 });
             };
-
         });
     };
 
@@ -363,7 +362,7 @@
         centeredSlides: true,
         centeredSlidesBounds: true,
         centerInsufficientSlides: true,
-        spaceBetween: 14
+        spaceBetween: 12
     };
 
     function getSwiperOptions(sliderConfig, sliderElements) {
@@ -422,15 +421,15 @@
         },
         group: {
             slidesPerView: 'auto',
-            slidesPerGroup: 1,
+            slidesPerGroup: 1, // changes
             slidesPerGroupAuto: true,
             centeredSlides: false,
             centeredSlidesBounds: false,
             centerInsufficientSlides: true,
         },
         page: {
-            slidesPerView: 1,
-            slidesPerGroup: 1,
+            slidesPerView: 1, // changes
+            slidesPerGroup: 1, // changes
             slidesPerGroupAuto: false,
             centeredSlides: false,
             centeredSlidesBounds: false,
