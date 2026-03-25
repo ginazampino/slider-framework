@@ -6,11 +6,9 @@
             "sliderType": "slider",
             "sliderLayout": "autoplay",
             "slideLayout": "movie",
+            "sliderMode": "group",
             "swiperOptions": {
-                "spaceBetween": 12,
-                "autoplay": {
-                    "delay": 200
-                }
+                "spaceBetween": 12
             }
         },
         {
@@ -18,7 +16,8 @@
             "rowLayout": "default",
             "sliderType": "slider",
             "sliderLayout": "default",
-            "slideLayout": "movie"
+            "slideLayout": "movie",
+            "sliderMode": "default"
         }
     ]
 }

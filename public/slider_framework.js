@@ -9,7 +9,7 @@
         console.log(`⚠️ (Debug - Slider Framework) Page "${pageName}" is not allowed. Skipping page.`);
         return;
     };
-    
+
     function getPageName(path) {
         const extractedName = path
             .replace(/^\/+/, '')
@@ -21,7 +21,7 @@
         Build Placeholders
     ================================== */
     const sliderContainerId = 'sliders';
-    const placeholderAmounts = { movies: 3, shows: 2 }; 
+    const placeholderAmounts = { movies: 3, shows: 2 };
     const placeholderSlideAmount = 5;
 
     buildPlaceholderHtml(pageName);
@@ -99,7 +99,7 @@
             console.log(`(Slider Framework) Failed to fetch slider data (${response.status}): ${response.url}`);
             return;
         };
-        
+
         return response.json();
     };
 
@@ -137,7 +137,7 @@
     ================================== */
     function buildSlidesHtml(slides, slideTemplate) {
         const slideHtmlList = [];
-        
+
         for (const slide of slides) {
             const slideHtml = fillTemplate(slideTemplate, slide);
             slideHtmlList.push(slideHtml);
@@ -167,7 +167,7 @@
 
     function buildProductionHtml(htmlTemplates, sliderData, pageConfig) {
         const sliderContainer = document.getElementById(sliderContainerId);
-        
+
         if (!sliderContainer) {
             console.warn(`(Slider Framework) Expected container "#${sliderContainerId}" not found. Skipping placeholder injection.`);
             return;
@@ -212,10 +212,10 @@
             const link = document.createElement('link');
             link.rel = 'stylesheet';
             link.href = url;
-            
+
             link.onload = () => resolve();
             link.onerror = () => reject(new Error(`(Slider Framework) Failed to load Swiper stylesheet at: ${url}`));
-        
+
             document.head.prepend(link);
         });
     };
@@ -271,7 +271,7 @@
                 return;
             };
 
-            const sliderConfig = pageConfig.sliders.find((slider)=> {
+            const sliderConfig = pageConfig.sliders.find((slider) => {
                 return slider.id === sliderId;
             });
 
@@ -292,7 +292,7 @@
             const slider = new Swiper(element, swiperOptions);
 
             if (toggleButton && slider.autoplay) {
-                 function stopAutoplay() {
+                function stopAutoplay() {
                     slider.autoplay.stop();
                     toggleButton.classList.remove('active');
                     toggleButton.classList.add('inactive');
@@ -347,37 +347,39 @@
         };
     };
 
+    const DEFAULT_SWIPER_OPTIONS = {
+        a11y: true,
+        keyboard: true,
+        simulateTouch: true,
+        speed: 500,
+        autoplay: false,
+        rewind: true,
+        loop: false,
+        initialSlide: 0,
+        updateOnWindowResize: true,
+        slidesPerView: 'auto',
+        slidesPerGroup: 1,
+        slidesPerGroupAuto: false,
+        centeredSlides: true,
+        centeredSlidesBounds: true,
+        centerInsufficientSlides: true,
+        spaceBetween: 14
+    };
+
     function getSwiperOptions(sliderConfig, sliderElements) {
         const sliderSwiperOptions = sliderConfig.swiperOptions || {};
-
-        const DEFAULT_SWIPER_OPTIONS = {
-            a11y: true,
-            keyboard: true,
-            simulateTouch: true,
-            speed: 500,
-            autoplay: false,
-            rewind: true,
-            loop: false,
-            initialSlide: 0,
-            updateOnWindowResize: true,
-            slidesPerView: 'auto',
-            slidesPerGroup: 1,
-            slidesPerGroupAuto: false,
-            centeredSlides: true,
-            centeredSlidesBounds: true,
-            centerInsufficientSlides: true,
-            spaceBetween: 14
-        };
+        const sliderModeOptions = resolveMode(sliderConfig.sliderMode || 'single');
 
         return {
             ...DEFAULT_SWIPER_OPTIONS,
+            ...sliderModeOptions,
             ...sliderSwiperOptions,
 
             navigation: sliderElements.prevButton && sliderElements.nextButton ? {
                 prevEl: sliderElements.prevButton,
                 nextEl: sliderElements.nextButton,
                 addIcons: false
-            }: false,
+            } : false,
 
             autoplay: resolveAutoplay(sliderSwiperOptions.autoplay)
         };
@@ -407,5 +409,36 @@
         };
 
         return false;
+    };
+
+    const SLIDER_MODE_OPTIONS = {
+        single: {
+            slidesPerView: 'auto',
+            slidesPerGroup: 1,
+            slidesPerGroupAuto: false,
+            centeredSlides: true,
+            centeredSlidesBounds: true,
+            centerInsufficientSlides: true,
+        },
+        group: {
+            slidesPerView: 'auto',
+            slidesPerGroup: 1,
+            slidesPerGroupAuto: true,
+            centeredSlides: false,
+            centeredSlidesBounds: false,
+            centerInsufficientSlides: true,
+        },
+        page: {
+            slidesPerView: 1,
+            slidesPerGroup: 1,
+            slidesPerGroupAuto: false,
+            centeredSlides: false,
+            centeredSlidesBounds: false,
+            centerInsufficientSlides: false,
+        }
+    };
+
+    function resolveMode(mode) {
+        return SLIDER_MODE_OPTIONS[mode] || SLIDER_MODE_OPTIONS.single;
     };
 })();
