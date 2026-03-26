@@ -3,21 +3,16 @@
         {
             "id": "actionMovies",
             "rowLayout": "default",
-            "sliderType": "slider",
             "sliderLayout": "default",
             "slideLayout": "movie",
-            "sliderMode": "page",
-            "swiperOptions": {
-                "spaceBetween": 12
-            }
+            "sliderMode": "group"
         },
         {
             "id": "horrorMovies",
             "rowLayout": "default",
-            "sliderType": "slider",
             "sliderLayout": "default",
             "slideLayout": "movie",
-            "sliderMode": "default"
+            "sliderMode": "single"
         }
     ]
 }
