@@ -1,5 +1,0 @@
-- All slider data is generated from the CMS into a single JSON file
-- Each page that contains sliders will have it's on JSON config file
-    - The config file will map to:
-        1. Slider data in a JSON file
-        2. HTML templates in a JSON file

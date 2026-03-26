@@ -1,4 +1,9 @@
 (() => {
+    function simulateLoading(ms) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+        });
+    };
     /* ==================================
         Filter Allowed Pages
     ================================== */
@@ -135,6 +140,8 @@
         Initiate Production Page
     ================================== */
     async function init(page) {
+        await simulateLoading(2000);
+        
         try {
             const [htmlTemplates, sliderData, pageConfig] = await Promise.all([
                 fetchJson('/config/templates.json'),
