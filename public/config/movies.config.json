@@ -3,6 +3,7 @@
         {
             "id": "actionMovies",
             "rowLayout": "default",
+            "sliderLibrary": "Swiper",
             "sliderLayout": "default",
             "slideLayout": "movie",
             "sliderMode": "single",
@@ -26,6 +27,7 @@
         {
             "id": "horrorMovies",
             "rowLayout": "default",
+            "sliderLibrary": "Marquee6k",
             "sliderLayout": "default",
             "slideLayout": "movie",
             "sliderMode": "single"
