@@ -205,7 +205,7 @@
     /* ==================================
         Add Swiper Files
     ================================== */
-    function addSwiperStyles(url) {
+    function addStyles(url) {
         return new Promise((resolve, reject) => {
             if (document.querySelector(`link[href="${url}"]`)) {
                 resolve();
@@ -217,13 +217,13 @@
             link.href = url;
 
             link.onload = () => resolve();
-            link.onerror = () => reject(new Error(`(Slider Framework) Failed to load Swiper stylesheet at: ${url}`));
+            link.onerror = () => reject(new Error(`(Slider Framework) Failed to load stylesheet at: ${url}`));
 
             document.head.prepend(link);
         });
     }
 
-    function addSwiperScript(url) {
+    function addScript(url) {
         return new Promise((resolve, reject) => {
             if (document.querySelector(`script[src="${url}"]`)) {
                 resolve();
@@ -235,7 +235,7 @@
             script.defer = true;
 
             script.onload = () => resolve();
-            script.onerror = () => reject(new Error(`(Slider Framework) Failed to load Swiper script at: ${url}`));
+            script.onerror = () => reject(new Error(`(Slider Framework) Failed to load script at: ${url}`));
 
             document.head.prepend(script);
         });
@@ -246,8 +246,16 @@
         const jsUrl = 'https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js';
 
         await Promise.all([
-            addSwiperStyles(cssUrl),
-            addSwiperScript(jsUrl)
+            addStyles(cssUrl),
+            addScript(jsUrl)
+        ]);
+    }
+
+    async function addMarqueeAssets() {
+        const jsUrl = 'https://cdn.jsdelivr.net/npm/marquee6k@1.3.4/marquee6k.min.js';
+
+        await Promise.all([
+            assScript(jsUrl)
         ]);
     }
 
