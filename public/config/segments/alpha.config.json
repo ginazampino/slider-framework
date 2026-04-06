@@ -1,0 +1,14 @@
+{
+    "alpha": {
+        "slider1": {
+            "title": "Alpha Slider 1",
+            "description": "This is the first slider for the alpha segment.",
+            "imageUrl": "https://via.placeholder.com/300x150?text=Alpha+Slider+1"
+        },
+        "slider2": {
+            "title": "Alpha Slider 2",
+            "description": "This is the second slider for the alpha segment.",
+            "imageUrl": "https://via.placeholder.com/300x150?text=Alpha+Slider+2"
+        }
+    }
+}

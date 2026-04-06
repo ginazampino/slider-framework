@@ -1,4 +1,9 @@
 (() => {
+    if (window.appConfig.isLoggedIn) {
+        console.log('the user is logged in');
+        console.log('user segment:', window.appConfig.userSegment);
+    };
+    
     function simulateLoading(ms) {
         return new Promise((resolve) => {
             setTimeout(resolve, ms);
