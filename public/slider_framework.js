@@ -150,8 +150,17 @@
             ]);
 
             buildProductionHtml(htmlTemplates, sliderData, pageConfig);
-            await addSwiperAssets();
-            initSwiper(pageConfig);
+
+            const needsSwiper = pageConfig.sliders.some((s) => s.sliderLibrary !== 'Marquee6k');
+            const needsMarquee = pageConfig.sliders.some((s) => s.sliderLibrary === 'Marquee6k');
+
+            const assetPromises = [];
+            if (needsSwiper) assetPromises.push(addSwiperAssets());
+            if (needsMarquee) assetPromises.push(addMarqueeAssets());
+            await Promise.all(assetPromises);
+
+            if (needsSwiper) initSwiper(pageConfig);
+            if (needsMarquee) initMarquee(pageConfig);
         } catch (error) {
             console.error(`(Slider Framework) Failed to fetch required config file(s) from server:`, error);
         }
@@ -164,9 +173,9 @@
         return slides.map((slide) => fillTemplate(slideTemplate, slide)).join('');
     }
 
-    function buildSliderHtml(sliderId, slides, sliderTemplate, slideTemplate) {
+    function buildSliderHtml(sliderId, slides, sliderTemplate, slideTemplate, itemsKey = 'slides') {
         const slidesHtml = buildSlidesHtml(slides, slideTemplate);
-        return fillTemplate(sliderTemplate, { id: sliderId, slides: slidesHtml });
+        return fillTemplate(sliderTemplate, { id: sliderId, [itemsKey]: slidesHtml });
     }
 
     function buildProductionHtml(htmlTemplates, sliderData, pageConfig) {
@@ -186,8 +195,11 @@
                 return '';
             }
 
+            const isMarquee = slider.sliderLibrary === 'Marquee6k';
             const rowTemplate = htmlTemplates.rows[slider.rowLayout];
-            const sliderTemplate = htmlTemplates.sliders[slider.sliderLayout];
+            const sliderTemplate = isMarquee
+                ? htmlTemplates.marquees[slider.sliderLayout]
+                : htmlTemplates.sliders[slider.sliderLayout];
             const slideTemplate = htmlTemplates.slides[slider.slideLayout];
 
             if (!rowTemplate || !sliderTemplate || !slideTemplate) {
@@ -195,7 +207,8 @@
                 return '';
             }
 
-            const sliderHtml = buildSliderHtml(sliderId, slides, sliderTemplate, slideTemplate);
+            const itemsKey = isMarquee ? 'items' : 'slides';
+            const sliderHtml = buildSliderHtml(sliderId, slides, sliderTemplate, slideTemplate, itemsKey);
             return fillTemplate(rowTemplate, { slider: sliderHtml });
         }).join('');
 
@@ -255,7 +268,7 @@
         const jsUrl = 'https://cdn.jsdelivr.net/npm/marquee6k@1.3.4/marquee6k.min.js';
 
         await Promise.all([
-            assScript(jsUrl)
+            addScript(jsUrl)
         ]);
     }
 
@@ -329,6 +342,42 @@
                     toggleAutoplay();
                 });
             }
+        });
+    }
+
+    /* ==================================
+        Initiate Marquee6k
+    ================================== */
+    function initMarquee(pageConfig) {
+        if (typeof marquee6k === 'undefined') {
+            console.warn(`(Slider Framework) Marquee6k is not available on the window.`);
+            return;
+        }
+
+        const marqueeElements = document.querySelectorAll('.marquee6k');
+
+        if (!marqueeElements.length) {
+            console.warn(`(Slider Framework) No ".marquee6k" elements found in the DOM.`);
+            return;
+        }
+
+        marqueeElements.forEach((element) => {
+            const sliderId = element.id;
+
+            if (!sliderId) {
+                console.warn(`(Slider Framework) Missing ID on ".marquee6k" element:`, element);
+                return;
+            }
+
+            const sliderConfig = pageConfig.sliders.find((slider) => slider.id === sliderId);
+
+            if (!sliderConfig) {
+                console.warn(`(Slider Framework) No page config found for marquee: #${sliderId}`);
+                return;
+            }
+
+            const marqueeOptions = sliderConfig.marqueeOptions || {};
+            new marquee6k(element, marqueeOptions);
         });
     }
 

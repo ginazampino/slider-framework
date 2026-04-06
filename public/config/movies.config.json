@@ -29,7 +29,7 @@
             "rowLayout": "default",
             "sliderLibrary": "Marquee6k",
             "sliderLayout": "default",
-            "slideLayout": "movie",
+            "slideLayout": "marqueeItem",
             "sliderMode": "single"
         }
     ]

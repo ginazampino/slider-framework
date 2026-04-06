@@ -124,3 +124,14 @@
 .swiper-slide img {
     height: 100%;
 }
+
+.marquee-container {
+    border-radius: .75rem;
+    max-width: 100%;
+    width: 100%;
+}
+
+.marquee6k {
+    border: 2px solid transparent;
+    border-radius: .75rem;
+}
