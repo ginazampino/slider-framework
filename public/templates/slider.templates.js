@@ -47,19 +47,21 @@ window.SliderTemplates = {
     },
 
     slides: {
-        movie: `
-            <div class="swiper-slide">
-                <a href="{{url}}">
-                    {{title}}
-                </a>
+        defaultMarquee: `
+            <div class="marquee-item">
+                {{title}}
             </div>
         `,
-        marqueeTest: `
-            <div class="marquee-item">
-                <a href="{{url}}">
-                    {{title}}
-                </a>
+        defaultSwiper: `
+            <div class="swiper-slide">
+                {{title}}
             </div>
-        `
+        `,
+        movie: `
+            <div class="swiper-slide">
+                {{title}}
+            </div>
+        `,
+        
     }
 };

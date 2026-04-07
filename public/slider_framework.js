@@ -1,18 +1,19 @@
 (() => {
-    if (window.appConfig.isLoggedIn) {
+    if (window.appConfig && window.appConfig.isLoggedIn) {
         console.log('the user is logged in');
         console.log('user segment:', window.appConfig.userSegment);
-    };
-    
+    }
+
     function simulateLoading(ms) {
         return new Promise((resolve) => {
             setTimeout(resolve, ms);
         });
-    };
+    }
+
     /* ==================================
         Filter Allowed Pages
     ================================== */
-    const ALLOWED_PAGES = new Set(['movies', 'shows']); // NOTE: Faster than Array
+    const ALLOWED_PAGES = new Set(['movies', 'shows']);
     const pageName = getPageName(window.location.pathname);
 
     if (!ALLOWED_PAGES.has(pageName)) return;
@@ -21,6 +22,7 @@
         const extractedName = path
             .replace(/^\/+/, '')
             .replace(/\.(html|aspx)$/, '');
+
         return extractedName || '';
     }
 
@@ -46,7 +48,11 @@
         const placeholderSliders = [];
 
         for (let i = 0; i < placeholderSliderAmount; i++) {
-            placeholderSliders.push(generatePlaceholderSlider(generatePlaceholderSlides(placeholderSlideAmount)));
+            placeholderSliders.push(
+                generatePlaceholderSlider(
+                    generatePlaceholderSlides(placeholderSlideAmount)
+                )
+            );
         }
 
         sliderContainer.innerHTML = placeholderSliders.join('');
@@ -85,11 +91,57 @@
         const response = await fetch(path);
 
         if (!response.ok) {
-            console.log(`(Slider Framework) Failed to fetch (${response.status}): ${response.url}`);
-            return;
+            throw new Error(`(Slider Framework) Failed to fetch (${response.status}): ${response.url}`);
         }
 
         return response.json();
+    }
+
+    /* ==================================
+        Segment Logic
+    ================================== */
+    function getUserSegment(appConfig) {
+        if (!appConfig) return 'loggedOut';
+        if (appConfig.userSegment) return appConfig.userSegment;
+        if (appConfig.isLoggedIn) return 'loggedIn';
+        return 'loggedOut';
+    }
+
+    function matchesWhen(when, context) {
+        return Object.entries(when).every(([key, value]) => context[key] === value);
+    }
+
+    function resolveSegmentSliders(segmentConfig, context) {
+        if (!segmentConfig || !Array.isArray(segmentConfig.segments)) {
+            console.warn('(Slider Framework) Invalid segment config.');
+            return [];
+        }
+
+        const matchedSegment = segmentConfig.segments.find((segment) =>
+            matchesWhen(segment.when || {}, context)
+        );
+
+        if (!matchedSegment) {
+            console.warn('(Slider Framework) No matching segment found for context:', context);
+            return [];
+        }
+
+        return Array.isArray(matchedSegment.sliders) ? matchedSegment.sliders : [];
+    }
+
+    async function fetchSliderConfigs(sliderIds) {
+        const results = await Promise.all(
+            sliderIds.map(async (sliderId) => {
+                try {
+                    return await fetchJson(`/sliders/${sliderId}.config.json`);
+                } catch (error) {
+                    console.warn(`(Slider Framework) Failed to load slider config for "${sliderId}".`, error);
+                    return null;
+                }
+            })
+        );
+
+        return results.filter(Boolean);
     }
 
     /* ==================================
@@ -145,37 +197,57 @@
         Initiate Production Page
     ================================== */
     async function init(page) {
-    await simulateLoading(2000);
+        await simulateLoading(2000);
 
-    try {
-        const [sliderData, pageConfig] = await Promise.all([
-            fetchJson('/data/sliders.json'),
-            fetchJson(`/config/${page}.config.json`)
-        ]);
+        try {
+            const [sliderData, segmentConfig] = await Promise.all([
+                fetchJson('/data/sliders.json'),
+                fetchJson(`/segments/${page}.segments.json`)
+            ]);
 
-        const htmlTemplates = window.SliderTemplates;
+            const htmlTemplates = window.SliderTemplates;
 
-        if (!htmlTemplates) {
-            console.error('(Slider Framework) window.SliderTemplates is not available.');
-            return;
+            if (!htmlTemplates) {
+                console.error('(Slider Framework) window.SliderTemplates is not available.');
+                return;
+            }
+
+            const context = {
+                userType: getUserSegment(window.appConfig)
+            };
+
+            const sliderIds = resolveSegmentSliders(segmentConfig, context);
+            const sliderConfigs = await fetchSliderConfigs(sliderIds);
+
+            if (!sliderConfigs.length) {
+                console.warn(`(Slider Framework) No slider configs resolved for page "${page}".`);
+
+                const sliderContainer = document.getElementById(sliderContainerId);
+                if (sliderContainer) {
+                    sliderContainer.innerHTML = '';
+                }
+
+                return;
+            }
+
+            buildProductionHtml(htmlTemplates, sliderData, sliderConfigs);
+
+            const needsSwiper = sliderConfigs.some((slider) => slider.sliderLibrary !== 'Marquee6k');
+            const needsMarquee = sliderConfigs.some((slider) => slider.sliderLibrary === 'Marquee6k');
+
+            const assetPromises = [];
+
+            if (needsSwiper) assetPromises.push(addSwiperAssets());
+            if (needsMarquee) assetPromises.push(addMarqueeAssets());
+
+            await Promise.all(assetPromises);
+
+            if (needsSwiper) initSwiper(sliderConfigs);
+            if (needsMarquee) initMarquee(sliderConfigs);
+        } catch (error) {
+            console.error('(Slider Framework) Failed to initialize sliders:', error);
         }
-
-        buildProductionHtml(htmlTemplates, sliderData, pageConfig);
-
-        const needsSwiper = pageConfig.sliders.some((s) => s.sliderLibrary !== 'Marquee6k');
-        const needsMarquee = pageConfig.sliders.some((s) => s.sliderLibrary === 'Marquee6k');
-
-        const assetPromises = [];
-        if (needsSwiper) assetPromises.push(addSwiperAssets());
-        if (needsMarquee) assetPromises.push(addMarqueeAssets());
-        await Promise.all(assetPromises);
-
-        if (needsSwiper) initSwiper(pageConfig);
-        if (needsMarquee) initMarquee(pageConfig);
-    } catch (error) {
-        console.error('(Slider Framework) Failed to fetch required config file(s) from server:', error);
     }
-}
 
     /* ==================================
         Build Production Sliders
@@ -184,12 +256,16 @@
         return slides.map((slide) => fillTemplate(slideTemplate, slide)).join('');
     }
 
-    function buildSliderHtml(sliderId, slides, sliderTemplate, slideTemplate, itemsKey = 'slides') {
+    function buildSliderHtml(sliderConfig, slides, sliderTemplate, slideTemplate, itemsKey = 'slides') {
         const slidesHtml = buildSlidesHtml(slides, slideTemplate);
-        return fillTemplate(sliderTemplate, { id: sliderId, [itemsKey]: slidesHtml });
+
+        return fillTemplate(sliderTemplate, {
+            ...sliderConfig,
+            [itemsKey]: slidesHtml
+        });
     }
 
-    function buildProductionHtml(htmlTemplates, sliderData, pageConfig) {
+    function buildProductionHtml(htmlTemplates, sliderData, sliderConfigs) {
         const sliderContainer = document.getElementById(sliderContainerId);
 
         if (!sliderContainer) {
@@ -197,8 +273,8 @@
             return;
         }
 
-        const productionHtml = pageConfig.sliders.map((slider) => {
-            const sliderId = slider.id;
+        const productionHtml = sliderConfigs.map((sliderConfig) => {
+            const sliderId = sliderConfig.id;
             const slides = sliderData[sliderId];
 
             if (!Array.isArray(slides)) {
@@ -206,12 +282,12 @@
                 return '';
             }
 
-            const isMarquee = slider.sliderLibrary === 'Marquee6k';
-            const rowTemplate = htmlTemplates.rows[slider.rowLayout];
+            const isMarquee = sliderConfig.sliderLibrary === 'Marquee6k';
+            const rowTemplate = htmlTemplates.rows[sliderConfig.rowLayout];
             const sliderTemplate = isMarquee
-                ? htmlTemplates.marquees[slider.sliderLayout]
-                : htmlTemplates.sliders[slider.sliderLayout];
-            const slideTemplate = htmlTemplates.slides[slider.slideLayout];
+                ? htmlTemplates.marquees[sliderConfig.sliderLayout]
+                : htmlTemplates.sliders[sliderConfig.sliderLayout];
+            const slideTemplate = htmlTemplates.slides[sliderConfig.slideLayout];
 
             if (!rowTemplate || !sliderTemplate || !slideTemplate) {
                 console.warn(`(Slider Framework) Missing HTML template(s) for slider: #${sliderId}`);
@@ -219,15 +295,24 @@
             }
 
             const itemsKey = isMarquee ? 'items' : 'slides';
-            const sliderHtml = buildSliderHtml(sliderId, slides, sliderTemplate, slideTemplate, itemsKey);
-            return fillTemplate(rowTemplate, { slider: sliderHtml });
+            const sliderHtml = buildSliderHtml(
+                sliderConfig,
+                slides,
+                sliderTemplate,
+                slideTemplate,
+                itemsKey
+            );
+
+            return fillTemplate(rowTemplate, {
+                slider: sliderHtml
+            });
         }).join('');
 
         sliderContainer.innerHTML = productionHtml;
     }
 
     /* ==================================
-        Add Swiper Files
+        Add Asset Files
     ================================== */
     function addStyles(url) {
         return new Promise((resolve, reject) => {
@@ -286,32 +371,32 @@
     /* ==================================
         Initiate Swiper
     ================================== */
-    function initSwiper(pageConfig) {
+    function initSwiper(sliderConfigs) {
         if (typeof Swiper === 'undefined') {
-            console.warn(`(Slider Framework) Swiper is not available on the window.`);
+            console.warn('(Slider Framework) Swiper is not available on the window.');
             return;
         }
 
         const swiperElements = document.querySelectorAll('.swiper');
 
         if (!swiperElements.length) {
-            console.warn(`(SliderFramework) No ".swiper" elements found in the DOM.`);
+            console.warn('(Slider Framework) No ".swiper" elements found in the DOM.');
             return;
         }
 
         swiperElements.forEach((element) => {
             const swiperContainer = element.closest('.swiper-container');
-            const sliderId = swiperContainer?.id;
+            const sliderId = swiperContainer && swiperContainer.id;
 
             if (!sliderId) {
-                console.warn(`(Slider Framework) Missing slider ID on ".swiper-container":`, element);
+                console.warn('(Slider Framework) Missing slider ID on ".swiper-container":', element);
                 return;
             }
 
-            const sliderConfig = pageConfig.sliders.find((slider) => slider.id === sliderId);
+            const sliderConfig = sliderConfigs.find((slider) => slider.id === sliderId);
 
             if (!sliderConfig) {
-                console.warn(`(Slider Framework) No page config found for slider: #${sliderId}`);
+                console.warn(`(Slider Framework) No slider config found for slider: #${sliderId}`);
                 return;
             }
 
@@ -319,26 +404,30 @@
             const nextButton = swiperContainer.querySelector('.swiper-button-next');
             const toggleButton = swiperContainer.querySelector('.swiper-button-toggle');
 
-            const swiperOptions = getSwiperOptions(sliderConfig, { prevButton, nextButton });
-            const slider = new Swiper(element, swiperOptions);
+            const swiperOptions = getSwiperOptions(sliderConfig, {
+                prevButton,
+                nextButton
+            });
 
-            if (toggleButton && slider.autoplay) {
+            const sliderInstance = new Swiper(element, swiperOptions);
+
+            if (toggleButton && sliderInstance.autoplay) {
                 function stopAutoplay() {
-                    slider.autoplay.stop();
+                    sliderInstance.autoplay.stop();
                     toggleButton.classList.remove('active');
                     toggleButton.classList.add('inactive');
                     toggleButton.setAttribute('aria-label', 'Start slider');
                 }
 
                 function startAutoplay() {
-                    slider.autoplay.start();
+                    sliderInstance.autoplay.start();
                     toggleButton.classList.remove('inactive');
                     toggleButton.classList.add('active');
                     toggleButton.setAttribute('aria-label', 'Stop slider');
                 }
 
                 function toggleAutoplay() {
-                    if (slider.autoplay.running) {
+                    if (sliderInstance.autoplay.running) {
                         stopAutoplay();
                     } else {
                         startAutoplay();
@@ -359,16 +448,16 @@
     /* ==================================
         Initiate Marquee6k
     ================================== */
-    function initMarquee(pageConfig) {
+    function initMarquee(sliderConfigs) {
         if (typeof marquee6k === 'undefined') {
-            console.warn(`(Slider Framework) Marquee6k is not available on the window.`);
+            console.warn('(Slider Framework) Marquee6k is not available on the window.');
             return;
         }
 
         const marqueeElements = document.querySelectorAll('.marquee6k');
 
         if (!marqueeElements.length) {
-            console.warn(`(Slider Framework) No ".marquee6k" elements found in the DOM.`);
+            console.warn('(Slider Framework) No ".marquee6k" elements found in the DOM.');
             return;
         }
 
@@ -376,14 +465,14 @@
             const sliderId = element.id;
 
             if (!sliderId) {
-                console.warn(`(Slider Framework) Missing ID on ".marquee6k" element:`, element);
+                console.warn('(Slider Framework) Missing ID on ".marquee6k" element:', element);
                 return;
             }
 
-            const sliderConfig = pageConfig.sliders.find((slider) => slider.id === sliderId);
+            const sliderConfig = sliderConfigs.find((slider) => slider.id === sliderId);
 
             if (!sliderConfig) {
-                console.warn(`(Slider Framework) No page config found for marquee: #${sliderId}`);
+                console.warn(`(Slider Framework) No slider config found for marquee: #${sliderId}`);
                 return;
             }
 
@@ -422,11 +511,13 @@
             ...baseMode,
             ...extraOpts,
 
-            navigation: sliderElements.prevButton && sliderElements.nextButton ? {
-                prevEl: sliderElements.prevButton,
-                nextEl: sliderElements.nextButton,
-                addIcons: false
-            } : false,
+            navigation: sliderElements.prevButton && sliderElements.nextButton
+                ? {
+                    prevEl: sliderElements.prevButton,
+                    nextEl: sliderElements.nextButton,
+                    addIcons: false
+                }
+                : false,
 
             autoplay: resolveAutoplay(extraOpts.autoplay),
             breakpoints: resolveBreakpoints(sliderConfig.breakpoints)
@@ -464,5 +555,4 @@
     function resolveMode(mode) {
         return SLIDER_MODE_OPTIONS[mode] || SLIDER_MODE_OPTIONS.single;
     }
-
 })();
