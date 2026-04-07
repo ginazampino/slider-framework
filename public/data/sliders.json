@@ -52,5 +52,33 @@
         {
             "title": "Plan 9 from Outer Space"
         }
+    ],
+    "koreanShows": [
+        {
+            "title": "IDOL I"
+        },
+        {
+            "title": "The Red Sleeve"
+        },
+        {
+            "title": "My Dearest"
+        },
+        {
+            "title": "Hotel Del Luna"
+        }
+    ],
+    "chineseShows": [
+        {
+            "title": "The Starry Love"
+        },
+        {
+            "title": "Lost You Forever"
+        },
+        {
+            "title": "Till the End of the Moon"
+        },
+        {
+            "title": "The Prisoner of Beauty"
+        }
     ]
 }

@@ -1,0 +1,18 @@
+{
+    "segments": [
+        {
+            "when": { "userType": "loggedOut" },
+            "sliders": [
+                "koreanShows",
+                "chineseShows"
+            ]
+        },
+        {
+            "when": { "userType": "newUser" },
+            "sliders": [
+                "chineseShows",
+                "koreanShows"
+            ]
+        }
+    ]
+}
