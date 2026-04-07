@@ -1,8 +1,0 @@
-{
-    "slider": {
-        "template": "<div class=\"slider\">{{title}}</div>"
-    },
-    "slide": {
-        "template": "<div class=\"slide\"><a href=\"{{url}}\">{{title}}</a></div>"
-    }
-}

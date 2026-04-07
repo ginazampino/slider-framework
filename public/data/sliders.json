@@ -1,88 +1,56 @@
 {
     "actionMovies": [
         {
-            "title": "Conan the Barbarian",
-            "image": "",
-            "url": "#"
+            "title": "Conan the Barbarian"
         },
         {
-            "title": "Conan the Destroyer",
-            "image": "",
-            "url": "#"
+            "title": "Conan the Destroyer"
         },
         {
-            "title": "Death Race 2000",
-            "image": "",
-            "url": "#"
+            "title": "Death Race 2000"
         },
         {
-            "title": "Kull the Conquerer",
-            "image": "",
-            "url": "#"
+            "title": "Kull the Conquerer"
         },
         {
-            "title": "Mad Max",
-            "image": "",
-            "url": "#"
+            "title": "Mad Max"
         },
         {
-            "title": "Red Sonja",
-            "image": "",
-            "url": "#"
+            "title": "Red Sonja"
         }
     ],
     "horrorMovies": [
         {
-            "title": "Tremors",
-            "image": "",
-            "url": "#"
+            "title": "Tremors"
         },
         {
-            "title": "Frogs",
-            "image": "",
-            "url": "#"
+            "title": "Frogs"
         },
         {
-            "title": "The Blob",
-            "image": "",
-            "url": "#"
+            "title": "The Blob"
         }, 
         {
-            "title": "Attack of the Killer Tomatoes!",
-            "image": "",
-            "url": "#"
+            "title": "Attack of the Killer Tomatoes!"
         },
         {
-            "title": "The Evil Dead",
-            "image": "",
-            "url": "#"
+            "title": "The Evil Dead"
         }
     ],
     "scifiMovies": [
         {
-            "title": "Planet of the Apes",
-            "image": "",
-            "url": "#"
+            "title": "Planet of the Apes"
         },
         {
-            "title": "Soylent Green",
-            "image": "",
-            "url": "#"
+            "title": "Soylent Green"
         },
         {
-            "title": "Westworld",
-            "image": "",
-            "url": "#"
+            "title": "Westworld"
         },
         {
-            "title": "A Boy and His Dog",
-            "image": "",
-            "url": "#"
+            "title": "A Boy and His Dog"
         },
         {
-            "title": "Plan 9 from Outer Space",
-            "image": "",
-            "url": "#"
+            "title": "Plan 9 from Outer Space"
         }
     ]
 }

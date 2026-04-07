@@ -1,36 +1,20 @@
 {
-    "sliders": [
+    "segments": [
         {
-            "id": "actionMovies",
-            "rowLayout": "default",
-            "sliderLibrary": "Swiper",
-            "sliderLayout": "default",
-            "slideLayout": "movie",
-            "sliderMode": "single",
-            "breakpoints": {
-                "500": {
-                    "sliderMode": "group",
-                    "swiperOptions": {
-                        "spaceBetween": 2
-                    }
-                },
-                "1000": {
-                    "sliderMode": "page",
-                    "swiperOptions": {
-                        "spaceBetween": 30,
-                        "slidesPerView": 3,
-                        "slidesPerGroup": 3
-                    }
-                }
-            }
+            "when": { "userType": "loggedOut" },
+            "sliders": [
+                "actionMovies",
+                "horrorMovies",
+                "scifiMovies"
+            ]
         },
         {
-            "id": "horrorMovies",
-            "rowLayout": "default",
-            "sliderLibrary": "Marquee6k",
-            "sliderLayout": "default",
-            "slideLayout": "marqueeItem",
-            "sliderMode": "single"
+            "when": { "userType": "newUser" },
+            "sliders": [
+                "scifiMovies",
+                "actionMovies",
+                "horrorMovies"
+            ]
         }
     ]
 }

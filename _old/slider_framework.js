@@ -145,37 +145,31 @@
         Initiate Production Page
     ================================== */
     async function init(page) {
-    await simulateLoading(2000);
+        await simulateLoading(2000);
+        
+        try {
+            const [htmlTemplates, sliderData, pageConfig] = await Promise.all([
+                fetchJson('/config/templates.json'),
+                fetchJson('/data/sliders.json'),
+                fetchJson(`/config/${page}.config.json`)
+            ]);
 
-    try {
-        const [sliderData, pageConfig] = await Promise.all([
-            fetchJson('/data/sliders.json'),
-            fetchJson(`/config/${page}.config.json`)
-        ]);
+            buildProductionHtml(htmlTemplates, sliderData, pageConfig);
 
-        const htmlTemplates = window.SliderTemplates;
+            const needsSwiper = pageConfig.sliders.some((s) => s.sliderLibrary !== 'Marquee6k');
+            const needsMarquee = pageConfig.sliders.some((s) => s.sliderLibrary === 'Marquee6k');
 
-        if (!htmlTemplates) {
-            console.error('(Slider Framework) window.SliderTemplates is not available.');
-            return;
+            const assetPromises = [];
+            if (needsSwiper) assetPromises.push(addSwiperAssets());
+            if (needsMarquee) assetPromises.push(addMarqueeAssets());
+            await Promise.all(assetPromises);
+
+            if (needsSwiper) initSwiper(pageConfig);
+            if (needsMarquee) initMarquee(pageConfig);
+        } catch (error) {
+            console.error(`(Slider Framework) Failed to fetch required config file(s) from server:`, error);
         }
-
-        buildProductionHtml(htmlTemplates, sliderData, pageConfig);
-
-        const needsSwiper = pageConfig.sliders.some((s) => s.sliderLibrary !== 'Marquee6k');
-        const needsMarquee = pageConfig.sliders.some((s) => s.sliderLibrary === 'Marquee6k');
-
-        const assetPromises = [];
-        if (needsSwiper) assetPromises.push(addSwiperAssets());
-        if (needsMarquee) assetPromises.push(addMarqueeAssets());
-        await Promise.all(assetPromises);
-
-        if (needsSwiper) initSwiper(pageConfig);
-        if (needsMarquee) initMarquee(pageConfig);
-    } catch (error) {
-        console.error('(Slider Framework) Failed to fetch required config file(s) from server:', error);
     }
-}
 
     /* ==================================
         Build Production Sliders
