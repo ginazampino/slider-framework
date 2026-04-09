@@ -137,7 +137,7 @@
 
     async function fetchSliderConfigs(sliderIds) {
         try {
-            const allConfigs = await fetchJson('/sliders/sliders.config.json');
+            const allConfigs = await fetchJson('/data/sliders.config.json');
 
             return sliderIds.map((sliderId) => {
                 const config = allConfigs[sliderId];
@@ -196,8 +196,8 @@
         try {
             const [sliderData, segmentConfig, templates] = await Promise.all([
                 fetchJson('/data/sliders.json'),
-                fetchJson(`/segments/${page}.segments.json`),
-                fetchJson('/templates/slider.templates.json')
+                fetchJson(`/data/${page}.segments.json`),
+                fetchJson('/data/slider.templates.json')
             ]);
 
             const context = { userType: getUserSegment(window.appConfig) };
