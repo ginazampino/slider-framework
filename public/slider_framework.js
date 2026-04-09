@@ -222,7 +222,7 @@
             await Promise.all(assetLoaders);
 
             if (needsSwiper) initSwiper(sliderConfigs);
-            if (needsMarquee) initMarquee(sliderConfigs);
+            if (needsMarquee) initMarquee();
         } catch (error) {
             console.error('(Slider Framework) Failed to initialize:', error);
         }
@@ -351,7 +351,7 @@
         Initialize Marquee
     ============================================================ */
 
-    function initMarquee(sliderConfigs) {
+    function initMarquee() {
         if (typeof marquee6k === 'undefined') {
             console.warn('(Slider Framework) Marquee6k is not available.');
             return;
@@ -364,21 +364,7 @@
             return;
         }
 
-        marqueeElements.forEach((element) => {
-            if (!element.id) {
-                console.warn('(Slider Framework) Missing ID on ".marquee6k" element:', element);
-                return;
-            }
-
-            const config = sliderConfigs.find((c) => c.id === element.id);
-
-            if (!config) {
-                console.warn(`(Slider Framework) No config found for marquee: #${element.id}`);
-                return;
-            }
-
-            new marquee6k(element, config.marqueeOptions || {});
-        });
+        marquee6k.init({ selector: 'marquee6k' });
     }
 
 

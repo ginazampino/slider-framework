@@ -9,7 +9,7 @@
     },
 
     "marquees": {
-        "default": "<div id=\"{{id}}\" class=\"marquee6k\" data-speed=\"0.5\" data-pausable=\"true\" tabindex=\"0\"><div class=\"marquee-track\"><div class=\"marquee-content\">{{items}}</div></div></div>"
+        "default": "<div id=\"{{id}}\" class=\"marquee6k\" data-speed=\"{{speed}}\" data-pausable=\"true\" tabindex=\"0\"><div id=\"{{id}}-track\" class=\"marquee-track\"><div class=\"marquee-content\">{{items}}</div></div></div>"
     },
 
     "slides": {

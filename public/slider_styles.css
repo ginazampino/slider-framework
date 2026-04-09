@@ -134,4 +134,17 @@
 .marquee6k {
     border: 2px solid transparent;
     border-radius: .75rem;
+    overflow: hidden;
+}
+
+.marquee-item {
+    background-image: url('https://placehold.co/360x240');
+    background-size: cover;
+    background-position: center;
+    border-radius: .75rem;
+    color: gray;
+    display: inline-block;
+    height: 240px;
+    margin-right: 10px;
+    width: 360px;
 }
