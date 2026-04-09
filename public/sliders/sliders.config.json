@@ -1,0 +1,62 @@
+{
+    "actionMovies": {
+        "id": "actionMovies",
+        "title": "Action Movies",
+        "sliderLibrary": "Swiper",
+        "rowLayout": "default",
+        "sliderLayout": "default",
+        "slideLayout": "movie",
+        "sliderMode": "group",
+        "swiperOptions": {
+            "autoplay": false
+        }
+    },
+    "scifiMovies": {
+        "id": "scifiMovies",
+        "title": "Science Fiction Movies",
+        "sliderLibrary": "Swiper",
+        "rowLayout": "default",
+        "sliderLayout": "default",
+        "slideLayout": "movie",
+        "sliderMode": "group",
+        "swiperOptions": {
+            "autoplay": false
+        }
+    },
+    "horrorMovies": {
+        "id": "horrorMovies",
+        "title": "Horror Movies",
+        "sliderLibrary": "Swiper",
+        "rowLayout": "default",
+        "sliderLayout": "default",
+        "slideLayout": "movie",
+        "sliderMode": "group",
+        "swiperOptions": {
+            "autoplay": false
+        }
+    },
+    "koreanShows": {
+        "id": "koreanShows",
+        "title": "Korean Shows",
+        "sliderLibrary": "Swiper",
+        "rowLayout": "default",
+        "sliderLayout": "default",
+        "slideLayout": "movie",
+        "sliderMode": "group",
+        "swiperOptions": {
+            "autoplay": false
+        }
+    },
+    "chineseShows": {
+        "id": "chineseShows",
+        "title": "Chinese Shows",
+        "sliderLibrary": "Swiper",
+        "rowLayout": "default",
+        "sliderLayout": "default",
+        "slideLayout": "movie",
+        "sliderMode": "group",
+        "swiperOptions": {
+            "autoplay": false
+        }
+    }
+}
