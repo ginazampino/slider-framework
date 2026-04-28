@@ -11,6 +11,7 @@
         {
             "when": { "userType": "newUser" },
             "sliders": [
+                "favoriteMovies",
                 "scifiMovies",
                 "actionMovies",
                 "horrorMovies"

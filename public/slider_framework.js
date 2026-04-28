@@ -160,11 +160,12 @@
         Segment Logic
     ============================================================ */
 
-    function getUserSegment(appConfig) {
-        if (!appConfig) return 'loggedOut';
-        if (appConfig.userSegment) return appConfig.userSegment;
-        if (appConfig.isLoggedIn) return 'loggedIn';
-        return 'loggedOut';
+    // Replace this function with a real API call when the session endpoint is available.
+    async function fetchUserContext() {
+        const config = window.appConfig || {};
+        const userType = config.userSegment || (config.isLoggedIn ? 'loggedIn' : 'loggedOut');
+        const favorites = config.favorites || {};
+        return { userType, favorites };
     }
 
     function resolveSegmentSliders(segmentConfig, context) {
@@ -191,16 +192,18 @@
     ============================================================ */
 
     async function init(page) {
-        await simulateLoading(2000);
+        await simulateLoading(2000); // TODO: remove when real API calls replace fetchUserContext
 
         try {
-            const [sliderData, segmentConfig, templates] = await Promise.all([
+            const [staticSliderData, segmentConfig, templates, userContext] = await Promise.all([
                 fetchJson('/data/sliders.json'),
                 fetchJson(`/data/${page}.segments.json`),
-                fetchJson('/data/slider.templates.json')
+                fetchJson('/data/slider.templates.json'),
+                fetchUserContext()
             ]);
 
-            const context = { userType: getUserSegment(window.appConfig) };
+            const sliderData = { ...staticSliderData, ...userContext.favorites };
+            const context = { userType: userContext.userType };
             const sliderIds = resolveSegmentSliders(segmentConfig, context);
             const sliderConfigs = await fetchSliderConfigs(sliderIds);
 
@@ -244,8 +247,10 @@
         const html = sliderConfigs.map((config) => {
             const slides = sliderData[config.id];
 
-            if (!Array.isArray(slides)) {
-                console.warn(`(Slider Framework) No data found for slider: #${config.id}`);
+            if (!Array.isArray(slides) || slides.length === 0) {
+                if (!Array.isArray(slides)) {
+                    console.warn(`(Slider Framework) No data found for slider: #${config.id}`);
+                }
                 return '';
             }
 

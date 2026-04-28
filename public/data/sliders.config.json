@@ -15,7 +15,7 @@
         "rowLayout": "default",
         "sliderLayout": "default",
         "slideLayout": "movie",
-        "sliderMode": "group",
+        "sliderMode": "single",
         "swiperOptions": {
             "autoplay": false
         }
@@ -47,6 +47,30 @@
     "chineseShows": {
         "id": "chineseShows",
         "title": "Chinese Shows",
+        "sliderLibrary": "Swiper",
+        "rowLayout": "default",
+        "sliderLayout": "default",
+        "slideLayout": "movie",
+        "sliderMode": "group",
+        "swiperOptions": {
+            "autoplay": false
+        }
+    },
+    "favoriteMovies": {
+        "id": "favoriteMovies",
+        "title": "My Favorite Movies",
+        "sliderLibrary": "Swiper",
+        "rowLayout": "default",
+        "sliderLayout": "default",
+        "slideLayout": "movie",
+        "sliderMode": "group",
+        "swiperOptions": {
+            "autoplay": false
+        }
+    },
+    "favoriteShows": {
+        "id": "favoriteShows",
+        "title": "My Favorite Shows",
         "sliderLibrary": "Swiper",
         "rowLayout": "default",
         "sliderLayout": "default",
