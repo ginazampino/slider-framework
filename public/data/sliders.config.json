@@ -32,9 +32,9 @@
             "autoplay": false
         }
     },
-    "koreanShows": {
-        "id": "koreanShows",
-        "title": "Korean Shows",
+    "nickCartoons": {
+        "id": "nickCartoons",
+        "title": "Nickelodeon",
         "sliderLibrary": "Swiper",
         "rowLayout": "default",
         "sliderLayout": "default",
@@ -44,9 +44,9 @@
             "autoplay": false
         }
     },
-    "chineseShows": {
-        "id": "chineseShows",
-        "title": "Chinese Shows",
+    "cnCartoons": {
+        "id": "cnCartoons",
+        "title": "Cartoon Network",
         "sliderLibrary": "Swiper",
         "rowLayout": "default",
         "sliderLayout": "default",

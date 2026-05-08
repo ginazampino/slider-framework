@@ -3,16 +3,16 @@
         {
             "when": { "userType": "loggedOut" },
             "sliders": [
-                "koreanShows",
-                "chineseShows"
+                "nickCartoons",
+                "cnCartoons"
             ]
         },
         {
             "when": { "userType": "newUser" },
             "sliders": [
                 "favoriteShows",
-                "chineseShows",
-                "koreanShows"
+                "nickCartoons",
+                "cnCartoons"
             ]
         }
     ]

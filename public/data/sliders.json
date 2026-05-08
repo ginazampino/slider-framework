@@ -53,32 +53,32 @@
             "title": "Plan 9 from Outer Space"
         }
     ],
-    "koreanShows": [
+    "nickCartoons": [
         {
-            "title": "IDOL I"
+            "title": "The Angry Beavers"
         },
         {
-            "title": "The Red Sleeve"
+            "title": "Aaahh!!! Real Monsters"
         },
         {
-            "title": "My Dearest"
+            "title": "Rocko's Modern Life"
         },
         {
-            "title": "Hotel Del Luna"
+            "title": "Invader Zim"
         }
     ],
-    "chineseShows": [
+    "cnCartoons": [
         {
-            "title": "The Starry Love"
+            "title": "Courage the Cowardly Dog"
         },
         {
-            "title": "Lost You Forever"
+            "title": "Time Squad"
         },
         {
-            "title": "Till the End of the Moon"
+            "title": "Johnny Bravo"
         },
         {
-            "title": "The Prisoner of Beauty"
+            "title": "Dexter's Laboratory"
         }
     ]
 }
