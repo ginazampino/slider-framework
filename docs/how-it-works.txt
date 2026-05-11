@@ -1,0 +1,110 @@
+Every page of the website 
+includes 2 files in the HEAD:
+
+	1. The slider framework JavaScript file.
+
+
+	2. The slider framework CSS file.
+
+	
+	Note: The Swiper and Marquee6k libraries don't
+ 	      exist in the HEAD unless they're needed.
+	      (More on this later.)
+
+
+A slider page needs 2 things:
+
+	1. The page title needs to match a word 
+	   in the framework's whitelist.
+
+
+	2. The page needs an HTML element with an ID of "slider".
+
+
+When any page on the website loads, 
+the framework checks the URL against the whitelist.
+
+	1. If the page title *isn't included* in the whitelist,
+           nothing else happens.
+
+
+	2. If the page title *is included* in the whitelist,
+	   the framework looks for an HTML element with an
+	   ID of "slider".
+
+
+	Note: If the page name is in the whitelist, but there's
+	      no element with an ID of "slider", then the console
+	      will throw a warning, and nothing else will happen.
+
+
+When the framework finds an HTML element
+with an ID of "slider:
+
+	1. The framework generates placeholder sliders
+	   and slides.
+
+
+	2. PLACEHOLDER_COUNTS determines how many *sliders*
+	   will be generated per page.
+
+
+	3. PLACEHOLDER_SLIDE_COUNT determines how many *slides*
+	   per slider.
+
+
+	Note: The styling for the placeholder slides exists
+	      within the framework's CSS file, which is included
+	      in the HEAD so it's available immediately.
+
+
+After the framework injects the placeholder sliders,
+it starts to fetch slider data from the server via API calls:
+
+	1. First, the framework pulls in sliders.config.json, 
+	   which contains the settings for every slider.
+
+	   (This data includes which slider library to use.)
+
+
+	2. Next, the framework gets the *user segment data*
+	   through an API call.
+
+	   (This data includes segment information, including
+	   user session and user favorites.)
+
+
+	3. After getting user segment data, the framework pulls
+	   pageTitle.segment.json from the server.
+
+	   (Each page has its own segment data, which determines
+	   which sliders get added based on the user's type.)
+
+
+	3. Next, the framework pulls in the sliders.json file,
+	   which contains the slide information for each slider.
+
+           (This data includes slide content and order.)
+
+
+	4. Next, the framework determines if the segment requires
+	   one or both slider libraries, then prepends them to the
+           HEAD of the document.
+
+
+	5. Next, the framework generates the sliders and their slides,
+	   then injects them into the HTML element with an ID of "slider",
+	   overwriting the placeholder HTML.
+
+	   (The HTML layout for all sliders and slides is defined in the
+	   slider.templates.json file. The templates use {{keys}} for
+	   the framework to dynamically fill in with data later.)
+
+
+	6. After the HTML for all sliders is injected into the page,
+	   the framework initializes each slider with the required library.
+
+	   (Note: Sliders will be initialized with default settings.
+	       	  Settings specified in slider.config.json will override 
+                  default settings.)
+	     
